@@ -7,19 +7,19 @@
 
 :root {
   /* 🎨 Paleta de colores */
-  --rosa-fondo: #ffeef5;
-  --rosa-claro: #fff0f6;
-  --rosa-lista: #ffe0ec;
-  --rosa-medio: #f06292;
-  --rosa-hover: #ec407a;
-  --rosa-fuerte: #d63384;
-  --rosa-oscuro: #ad1457;
-  --verde: #43a047;
-  --verde-hover: #388e3c;
-  --morado: #880e4f;
-  --gris-texto: #333;
-  --gris-secundario: #666;
-  --borde: #f8bbd0;
+  --rosa-fondo: #fff8e1;
+  --rosa-claro: #fff3cd;
+  --rosa-lista: #ffe8a1;
+  --rosa-medio: #d4af37;
+  --rosa-hover: #c9a227;
+  --rosa-fuerte: #b8961e;
+  --rosa-oscuro: #8c6d1f;
+  --verde: #c5a100;
+  --verde-hover: #a88c00;
+  --morado: #6e5500;
+  --gris-texto: #3a2f0b;
+  --gris-secundario: #6b5e2e;
+  --borde: #e6c76b;
 }
 
 body {
