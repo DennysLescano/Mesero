@@ -230,18 +230,29 @@ function showConfirmModal(message, yesText = "Sí", noText = "No") {
 window.alert = async function(msg) { await showModalMessage(msg); };
 window.confirm = async function(msg) { return await showConfirmModal(msg); };
 window.prompt = async function(msg, placeholder = "") { return await showInputModal(msg, placeholder); };
-
 // -------------------- AUTH & UI --------------------
 
 let mesaSeleccionada = null;
 
+// 🔹 FUNCIONES LOADER
+function mostrarLoader() {
+  const loader = document.getElementById("loaderOverlay");
+  if (loader) loader.style.display = "flex";
+}
 
+function ocultarLoader() {
+  const loader = document.getElementById("loaderOverlay");
+  if (loader) loader.style.display = "none";
+}
+
+// -------------------- UI --------------------
 
 function actualizarUI(user) {
   if (user) {
     loginSection && (loginSection.style.display = "none");
     meseroSection && (meseroSection.style.display = "block");
     currentMeseroEmail = user.email;
+
     cargarProductos();
     renderMesas();
   } else {
@@ -251,40 +262,81 @@ function actualizarUI(user) {
   }
 }
 
+// -------------------- AUTH STATE --------------------
+
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    mostrarLoader(); // 🔥 BLOQUEA PANTALLA
+
     const uid = user.uid;
     const rolRef = ref(db, "roles/" + uid);
-    get(rolRef).then(snapshot => {
-      if (snapshot.exists() && snapshot.val() === "mesero") {
-        actualizarUI(user);
-      } else {
-        showToast("🚫 Acceso denegado", "error");
-        signOut(auth);
-      }
-    });
+
+    get(rolRef)
+      .then(snapshot => {
+        if (snapshot.exists() && snapshot.val() === "mesero") {
+          actualizarUI(user);
+        } else {
+          showToast("🚫 Acceso denegado", "error");
+          signOut(auth);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        showToast("Error al validar usuario", "error");
+      })
+      .finally(() => {
+        ocultarLoader(); // 🔥 SIEMPRE SE OCULTA
+      });
+
   } else {
     actualizarUI(null);
   }
 });
 
+// -------------------- LOGIN --------------------
+
 loginBtn?.addEventListener("click", () => {
   const email = emailInput.value.trim();
   const password = passwordInput.value;
+
   if (!email || !password) {
     return showToast("Completa los campos", "error");
   }
 
+  mostrarLoader(); // 🔥 ACTIVAR LOADER
+  loginBtn.disabled = true; // 🔒 EVITA DOBLE CLICK
+
   signInWithEmailAndPassword(auth, email, password)
-    .then(() => showToast("¡Bienvenido!", "success"))
-    .catch(() => showToast("Credenciales incorrectas", "error"));
+    .then(() => {
+      showToast("¡Bienvenido!", "success");
+    })
+    .catch(() => {
+      showToast("Credenciales incorrectas", "error");
+    })
+    .finally(() => {
+      ocultarLoader(); // 🔥 OCULTAR
+      loginBtn.disabled = false; // 🔓 REACTIVAR BOTÓN
+    });
 });
 
+// -------------------- LOGOUT --------------------
+
 logoutBtn?.addEventListener("click", () => {
-  signOut(auth).then(() =>
-    showToast("Sesión cerrada", "info")
-  );
+  mostrarLoader(); // opcional pero profesional
+
+  signOut(auth)
+    .then(() => {
+      showToast("Sesión cerrada", "info");
+    })
+    .catch(() => {
+      showToast("Error al cerrar sesión", "error");
+    })
+    .finally(() => {
+      ocultarLoader();
+    });
 });
+
+// -------------------- LIMPIEZA --------------------
 
 function limpiarCampos() {
   buscarInput && (buscarInput.value = "");
