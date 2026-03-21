@@ -230,14 +230,18 @@ function showConfirmModal(message, yesText = "Sí", noText = "No") {
 window.alert = async function(msg) { await showModalMessage(msg); };
 window.confirm = async function(msg) { return await showConfirmModal(msg); };
 window.prompt = async function(msg, placeholder = "") { return await showInputModal(msg, placeholder); };
+
 // -------------------- AUTH & UI --------------------
 
 let mesaSeleccionada = null;
 
 // 🔹 FUNCIONES LOADER
-function mostrarLoader() {
+function mostrarLoader(texto = "Cargando...") {
   const loader = document.getElementById("loaderOverlay");
+  const textoLoader = document.getElementById("loaderTexto");
+
   if (loader) loader.style.display = "flex";
+  if (textoLoader) textoLoader.textContent = texto;
 }
 
 function ocultarLoader() {
